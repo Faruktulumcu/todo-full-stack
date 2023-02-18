@@ -1,0 +1,30 @@
+{
+  "root": true,
+  "ignorePatterns": ["src/reportWebVitals.ts", "setupTests.ts"],
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": ["prettier"],
+  "overrides": [
+    {
+      "files": ["**/*.ts?(x)"],
+      "extends": [
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "rules": {
+        "camelcase": "error"
+      }
+    }
+  ],
+  "rules": {
+    "@typescript-eslint/no-non-null-assertion": "warn",
+    "camelcase": "error",
+    "no-console": "warn",
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "react/display-name": "off"
+  }
+}
