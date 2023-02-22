@@ -1,5 +1,6 @@
 package com.example.taskcrud.service;
 
+import com.example.taskcrud.exception.TodoNotFoundException;
 import com.example.taskcrud.model.Todo;
 import com.example.taskcrud.model.TodoDto;
 import com.example.taskcrud.repository.TodoRepository;
@@ -38,7 +39,7 @@ public class TasksService {
         return repository.save(taskEntity).toDto();
     }
 
-    public TodoDto updateTask(Integer id, TodoDto todoDto) throws Exception {
+    public TodoDto updateTask(Integer id, TodoDto todoDto) throws TodoNotFoundException {
         Optional<Todo> tasksOptional = repository.findById(id);
         if (tasksOptional.isPresent()) {
             Todo todo = tasksOptional.get();
@@ -48,27 +49,30 @@ public class TasksService {
             todo.setDone(todo.isDone());
             return repository.save(todo).toDto();
         }
-        throw new Exception("Entity not found with given id: " + id);
+        throw new TodoNotFoundException("Entity not found with given id: " + id);
     }
 
     @Transactional
-    public void updateDoneStatus(Integer id, boolean doneStatus){
-        repository.updateDoneById(doneStatus, id);
+    public void updateDoneStatus(Integer id, boolean doneStatus) throws TodoNotFoundException {
+        int updatedRows = repository.updateDoneById(doneStatus, id);
+        if (updatedRows == 0) {
+            throw new TodoNotFoundException("Entity not found with given id: " + id);
+        }
     }
 
-    public void deleteTask(Integer id) throws Exception {
+    public void deleteTask(Integer id) throws TodoNotFoundException {
         Optional<Todo> tasksOptional = repository.findById(id);
         if (tasksOptional.isPresent()) {
             repository.deleteById(id);
             return;
         }
-        throw new Exception("Entity not found with given id: " + id);
+        throw new TodoNotFoundException("Entity not found with given id: " + id);
     }
 
-    public TodoDto findById(Integer id) throws Exception {
+    public TodoDto findById(Integer id) throws TodoNotFoundException {
         Todo todo = repository.findById(id).orElse(null);
-        if (todo == null){
-            throw new Exception("Entity not found with given id: " + id);
+        if (todo == null) {
+            throw new TodoNotFoundException("Entity not found with given id: " + id);
         }
         return todo.toDto();
     }

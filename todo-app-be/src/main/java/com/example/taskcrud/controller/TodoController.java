@@ -1,5 +1,6 @@
 package com.example.taskcrud.controller;
 
+import com.example.taskcrud.exception.TodoNotFoundException;
 import com.example.taskcrud.model.TodoDto;
 import com.example.taskcrud.service.TasksService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,10 +18,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
+@RestController
 @Tag(name = "Todo Controller")
 @RequestMapping("/tasks")
 public class TodoController {
@@ -36,12 +38,8 @@ public class TodoController {
 
     @GetMapping("/{id}")
     @Operation
-    public ResponseEntity<TodoDto> getById(@PathVariable Integer id) {
-        try {
-            return ResponseEntity.ok(service.findById(id));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<TodoDto> getById(@PathVariable Integer id) throws TodoNotFoundException {
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
@@ -52,33 +50,21 @@ public class TodoController {
 
     @PutMapping("/{id}")
     @Operation
-    public ResponseEntity<TodoDto> update(@PathVariable Integer id, @RequestBody TodoDto request) {
-        try {
-            return ResponseEntity.ok(service.updateTask(id, request));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<TodoDto> update(@PathVariable Integer id, @RequestBody TodoDto request) throws TodoNotFoundException {
+        return ResponseEntity.ok(service.updateTask(id, request));
     }
 
     @PatchMapping("/{id}/done/{done}")
     @Operation
-    public ResponseEntity update(@PathVariable Integer id, @PathVariable Boolean done) {
-        try {
-            service.updateDoneStatus(id, done);
-            return ResponseEntity.ok(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<Boolean> update(@PathVariable Integer id, @PathVariable Boolean done) throws TodoNotFoundException {
+        service.updateDoneStatus(id, done);
+        return ResponseEntity.ok(true);
     }
 
     @DeleteMapping("/{id}")
     @Operation
-    public ResponseEntity delete(@PathVariable Integer id) {
-        try {
-            service.deleteTask(id);
-            return ResponseEntity.status(200).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<Boolean> delete(@PathVariable Integer id) throws TodoNotFoundException {
+        service.deleteTask(id);
+        return ResponseEntity.ok(true);
     }
 }

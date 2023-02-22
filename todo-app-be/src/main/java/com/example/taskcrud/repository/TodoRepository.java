@@ -16,5 +16,5 @@ public interface TodoRepository extends CrudRepository<Todo, Integer> {
 
     @Modifying
     @Query("update Todo set done = :done where id = :id")
-    void updateDoneById(@Param("done") boolean done, @Param("id") Integer id);
+    int updateDoneById(@Param("done") boolean done, @Param("id") Integer id);
 }
